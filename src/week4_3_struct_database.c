@@ -1,7 +1,7 @@
 /*
  * week4_3_struct_database.c
- * Author: [Your Name]
- * Student ID: [Your ID]
+ * Author: Fuad Salahli
+ * Student ID: 241ABD065
  * Description:
  *   Simple in-memory "database" using an array of structs.
  *   Use malloc to allocate space for n Student records,
@@ -16,8 +16,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-// TODO: Define struct Student with fields name (char[50]), id (int), grade (float)
-//       (same definition as in Task 2)
+struct Student {
+    char name[50];
+    int id;
+    float grade;
+};
 
 int main(void) {
     int n;
@@ -29,28 +32,37 @@ int main(void) {
         return 1;
     }
 
-    // TODO: Allocate memory for n Student structs using malloc
-    //       Example: students = malloc(n * sizeof(struct Student));
+    students = malloc(n * sizeof(struct Student));
 
-    // TODO: Check allocation success
-    // If students is NULL: print "Memory allocation failed." and return 1
+    if (students == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
 
-    // TODO: Read student data in a loop. For student i (counting from 1):
-    //       print "Enter data for student %d: ", then read
-    //       name (scanf("%49s", ...)), id and grade.
-    //       If a value cannot be read: print "Invalid input.",
-    //       free the array and return 1
+    for (int i = 0; i < n; i++) {
+        printf("Enter data for student %d: ", i + 1);
 
-    // TODO: Print an empty line, then the table:
-    //       printf("%-6s %-11s %s\n", "ID", "Name", "Grade");
-    //       and for each student:
-    //       printf("%-6d %-11s %.1f\n", id, name, grade);
+        if (scanf("%49s %d %f",
+                  students[i].name,
+                  &students[i].id,
+                  &students[i].grade) != 3) {
+            printf("Invalid input.\n");
+            free(students);
+            return 1;
+        }
+    }
 
-    // Optional (not autograded): after the table, print the average
-    // grade or the top student
+    printf("\n");
+    printf("%-6s %-11s %s\n", "ID", "Name", "Grade");
 
-    // TODO: Free allocated memory
-    (void)students;  // remove this line once you use students
+    for (int i = 0; i < n; i++) {
+        printf("%-6d %-11s %.1f\n",
+               students[i].id,
+               students[i].name,
+               students[i].grade);
+    }
+
+    free(students);
 
     return 0;
 }
