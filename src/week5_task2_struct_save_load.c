@@ -19,8 +19,9 @@ typedef struct Student {
     float gpa;
 } Student;
 
-int save_student(const Student *s, const char *filename);  
-int load_student(const char *filename, Student *out);      
+
+int save_student(const Student *s, const char *filename);  // 0 on success, -1 on error
+int load_student(const char *filename, Student *out);      // 0 on success, -1 on error
 
 int main(void) {
     Student s1 = {0};
@@ -33,12 +34,13 @@ int main(void) {
 
     printf("Saving student to file...\n");
     if (save_student(&s1, filename) != 0) {
-        perror("Failed to save student");
+        perror(filename);
         return EXIT_FAILURE;
     }
+
     printf("Loading student from file...\n");
     if (load_student(filename, &loaded) != 0) {
-        perror("Failed to load student");
+        perror(filename);
         return EXIT_FAILURE;
     }
 
@@ -48,24 +50,39 @@ int main(void) {
 }
 
 int save_student(const Student *s, const char *filename) {
-    FILE *fp = fopen(filename, "w");
-    if (!fp) {
+    if (s == NULL || filename == NULL) {
         return -1;
     }
-    fprintf(fp, "%s %d %.2f\n", s->name, s->age, s->gpa);
+
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        return -1;
+    }
+
+    if (fprintf(fp, "%s %d %.2f\n", s->name, s->age, s->gpa) < 0) {
+        fclose(fp);
+        return -1;
+    }
+
     fclose(fp);
     return 0;
 }
 
 int load_student(const char *filename, Student *out) {
-    FILE *fp = fopen(filename, "r");
-    if (!fp) {
+    if (filename == NULL || out == NULL) {
         return -1;
     }
+
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        return -1;
+    }
+
     if (fscanf(fp, "%49s %d %f", out->name, &out->age, &out->gpa) != 3) {
         fclose(fp);
         return -1;
     }
+
     fclose(fp);
     return 0;
 }
